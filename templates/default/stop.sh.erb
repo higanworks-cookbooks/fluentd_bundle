@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -e
+
+PIDFILE="<%= node[:fluentd_bundle][:root] %>/var/fluentd.pid"
+
+if [ -f $PIDFILE ];then
+  PID=`cat $PIDFILE`
+
+  if [ -d /proc/$PID ]; then
+
+    echo -n "stopping fluentd "
+    i=0
+    kill $PID
+    while test -d /proc/$PID; do
+    echo -n "."
+      sleep 1
+      i=$(($i+1))
+    done
+    echo  "OK"
+  fi
+fi

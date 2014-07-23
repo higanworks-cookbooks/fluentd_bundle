@@ -1,0 +1,8 @@
+<% @sources.each do |rsrc| %>
+source '<%= rsrc %>'
+<%end%>
+
+<% @gems.each_pair do |name, opts| %>
+gem '<%= name %>'<% unless opts.empty?  %><%= "," %><%= opts %><% end %>
+<%end%>
+

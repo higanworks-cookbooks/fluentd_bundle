@@ -1,0 +1,10 @@
+<%= node[:fluentd_bundle][:root] %>/log/*.log
+{
+    rotate <%= @gen %>
+    weekly
+    missingok
+    notifempty
+    compress
+    delaycompress
+    copytruncate
+}

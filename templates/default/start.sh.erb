@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+set -e
+
+PIDFILE="<%= node[:fluentd_bundle][:root] %>/var/fluentd.pid"
+
+if [ -f $PIDFILE ];then
+  PID=`cat $PIDFILE`
+
+  if [ -f /proc/$PID/cwd/bin/fluentd  ]; then
+    echo "fluentd already exist."
+    exit 1
+  fi
+fi
+
+if [ -f /etc/profile.d/rbenv.sh ];then source /etc/profile.d/rbenv.sh ; fi
+
+cd <%= node[:fluentd_bundle][:root] %>
+
+echo "starting fluentd ..."
+./bin/fluentd --config etc/fluent.conf --user <%= node[:fluentd_bundle][:ug][:user] %> --group <%= node[:fluentd_bundle][:ug][:group] %> --daemon var/fluentd.pid --log log/fluentd.log
