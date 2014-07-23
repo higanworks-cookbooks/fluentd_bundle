@@ -16,6 +16,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+node.run_state[:fluentd_bundle] = Mash.new
+node.run_state[:fluentd_bundle][:bundler_pre_commands] = node[:fluentd_bundle][:bundler][:pre_commands]
+
 group node[:fluentd_bundle][:ug][:group]
 
 user node[:fluentd_bundle][:ug][:user] do
@@ -30,10 +33,10 @@ include_recipe "#{cookbook_name}::rbenv" if node[:fluentd_bundle][:use_rbenv]
 directory node[:fluentd_bundle][:root] do
   owner node[:fluentd_bundle][:ug][:user]
   group node[:fluentd_bundle][:ug][:group]
-  notifies :create, "file[#{File.join(node[:fluentd_bundle][:root], '.ruby-version')}]", :immediately if node.run_state[:rbenv_versionfile]
+  notifies :create, "file[#{File.join(node[:fluentd_bundle][:root], '.ruby-version')}]", :immediately if node.run_state[:fluentd_bundle][:rbenv_versionfile]
 end
 
-%w{etc/conf.d scripts log var tmp}.each do |dir|
+%w{etc etc/conf.d scripts log var tmp}.each do |dir|
   directory File.join(node[:fluentd_bundle][:root], dir) do
     recursive true
     owner node[:fluentd_bundle][:ug][:user]
@@ -66,6 +69,7 @@ bash 'bundle_for_fluentd' do
   cwd node[:fluentd_bundle][:root]
   code <<-EOH
   if [ -f /etc/profile.d/rbenv.sh ];then source /etc/profile.d/rbenv.sh ; fi
+  #{node.run_state[:fluentd_bundle][:bundler_pre_commands].join("\n")}
   bundle install --path=vendor/bundle --binstubs
   EOH
 end

@@ -19,4 +19,4 @@ file File.join(node[:fluentd_bundle][:root], '.ruby-version') do
   group node[:fluentd_bundle][:ug][:group]
 end
 
-node.run_state[:rbenv_versionfile] = true
+node.run_state[:fluentd_bundle][:rbenv_versionfile] = true
