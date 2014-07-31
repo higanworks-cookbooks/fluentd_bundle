@@ -64,13 +64,17 @@ template File.join(node[:fluentd_bundle][:root], 'Gemfile') do
 end
 
 bash 'bundle_for_fluentd' do
-  action :nothing
+  if node[:fluentd_bundle][:bundler][:force_bundle]
+    action :run
+  else
+    action :nothing
+  end
   environment 'HOME' => node[:fluentd_bundle][:root]
   user node[:fluentd_bundle][:ug][:user]
   cwd node[:fluentd_bundle][:root]
   code <<-EOH
   if [ -f /etc/profile.d/rbenv.sh ];then source /etc/profile.d/rbenv.sh ; fi
   #{node.run_state[:fluentd_bundle][:bundler_pre_commands].join("\n")}
-  bundle install --path=vendor/bundle --binstubs
+  bundle install --path=vendor/bundle --binstubs --without development,test
   EOH
 end
