@@ -65,6 +65,7 @@ end
 
 bash 'bundle_for_fluentd' do
   action :nothing
+  environment 'HOME' => node[:fluentd_bundle][:root]
   user node[:fluentd_bundle][:ug][:user]
   cwd node[:fluentd_bundle][:root]
   code <<-EOH
